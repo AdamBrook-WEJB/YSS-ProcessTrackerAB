@@ -119,7 +119,7 @@ footer{text-align:center;font-size:11.5px;color:#a1a1aa;padding:6px 0 22px}
       </div>
       <div class="field">
         <label class="req" for="line">Line</label>
-        <input type="text" id="line" class="big" inputmode="numeric" pattern="[0-9]*" value="1" maxlength="3" autocomplete="off">
+        <input type="text" id="line" class="big" inputmode="numeric" pattern="[0-9]*" placeholder="0" maxlength="3" autocomplete="off">
       </div>
     </div>
     <div class="found" id="found"></div>
@@ -201,7 +201,7 @@ footer{text-align:center;font-size:11.5px;color:#a1a1aa;padding:6px 0 22px}
   <button type="button" class="btn ghost" id="again">Log another process</button>
 </div>
 
-<footer>Process Tracker PT001 &middot; Sign-off v1.3</footer>
+<footer>Process Tracker PT001 &middot; Sign-off v1.5</footer>
 </main>
 
 <script>
@@ -233,13 +233,19 @@ var CONFIG = {
      receives the whole record as JSON, signature included. -------- */
   ENDPOINT: "",
 
-  DOMAIN:   "yss.co.uk",
-  MANAGER:  { name: "Jonny", email: "jonny@yss.co.uk" },
+  DOMAIN:   "yssltd.com",
+  MANAGER:  { name: "Jonny", email: "jonny@yssltd.com" },
+
+  /* Web3Forms Pro can CC per submission. "off" leaves the CC exactly as
+     set in the Web3Forms dashboard. "rep" sends the sales rep and the
+     manager as the CC on each sign-off — only switch this on once the
+     rep addresses below are known to be right, or the copies bounce. */
+  CC_MODE:  "off",
   REP_EMAILS: {
     /* only needed where the address isn't firstname@DOMAIN, e.g.
        "Andrew": "andrew.smith@yss.co.uk" */
   },
-  FALLBACK: "office@yss.co.uk",     // used when the rep is unknown
+  FALLBACK: "office@yssltd.com",    // used when the rep is unknown
   REPLY_TO_REP: false,              // true once the rep addresses are known to be right
   DATA_DATE: "20 August 2026",      // when the planner was last read in
   PROCESSES: [
@@ -448,7 +454,7 @@ var CONFIG = {
   function check(d) {
     var m = [];
     if (!/^\d{3,7}$/.test(d.job)) m.push("job number");
-    if (!d.line) m.push("line number");
+    if (!/^\d{1,3}$/.test(d.line)) m.push("line number");
     if (!d.process) m.push("process");
     if (!d.operative) m.push("operative name");
     if (!d.rep) m.push("sales rep");
@@ -560,31 +566,45 @@ var CONFIG = {
         body: JSON.stringify(d)
       }).then(function (r) { if (!r.ok) throw new Error("HTTP " + r.status); });
     } else {
-      /* Web3Forms. It turns whatever fields it's given into the body of
-         the email, so these are named the way they should read. */
+      /* Web3Forms turns each field into a column in the connected Google
+         Sheet, and into a row of the notification email.
+         Two rules follow from that, and both matter:
+           1. EVERY field is sent EVERY time, even when empty. Omitting a
+              field on some submissions shifts the columns out of line.
+           2. The order here is the column order. Add new fields at the
+              END, never in the middle, or the history stops lining up.
+         Numbers are sent as numbers so the sheet can total and sort them
+         rather than treating "120" as text. */
+      var stampD = stamp;
       var w3 = {
         access_key: CONFIG.WEB3FORMS_KEY,
         subject: subject(d),
         from_name: "Process Sign-Off",
         botcheck: "",
-        "Job": d.job + " / line " + d.line,
+
+        "Date": stampD.getFullYear() + "-" + pad(stampD.getMonth() + 1) + "-" + pad(stampD.getDate()),
+        "Signed at": pad(stampD.getHours()) + ":" + pad(stampD.getMinutes()),
+        "Job": d.job,
+        "Line": d.line,
+        "Customer": d.customer || "",
+        "Product": d.description || "",
         "Process": d.process,
         "Operative": d.operative,
-        "Sales rep": d.rep + (d.repAuto ? " (from the planner)" : " (chosen by hand)"),
-        "For the attention of": d.rep + ", copy to " + CONFIG.MANAGER.name,
+        "Sales rep": d.rep,
+        "Rep from": d.repAuto ? "Planner" : "Chosen by hand",
         "Started": d.start,
         "Finished": d.finish,
-        "Time taken": pretty(d.minutes),
-        "Quantity": d.qty,
-        "Signed at": when,
-        "Signature": "Captured on the device. Not attached — free plan.",
-        "message": bodyText(d, when)
+        "Minutes": d.minutes,
+        "Quantity": Number(d.qty) || d.qty,
+        "Stock location": d.location || "",
+        "Notes": d.notes || "",
+        "Problem": d.problem ? "YES" : "",
+        "Signature": sig ? "Captured on device" : "",
+        "Timestamp": stampD.toISOString()
       };
-      if (d.customer) w3["Customer"] = d.customer;
-      if (d.description) w3["Product"] = d.description;
-      if (d.location) w3["Stock location"] = d.location;
-      if (d.notes) w3["Notes"] = d.notes;
-      if (d.problem) w3["PROBLEM FLAGGED"] = "Yes";
+      if (CONFIG.CC_MODE === "rep") {
+        w3.ccemail = [d.to, CONFIG.MANAGER.email].filter(Boolean).join(",");
+      }
       if (CONFIG.REPLY_TO_REP) w3.replyto = d.to;
 
       req = fetch("https://api.web3forms.com/submit", {
