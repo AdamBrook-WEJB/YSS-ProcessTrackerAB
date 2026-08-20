@@ -132,6 +132,11 @@ footer{text-align:center;font-size:11.5px;color:#a1a1aa;padding:6px 0 22px}
       <label class="req" for="process">Process completed</label>
       <select id="process"><option value="">Choose&hellip;</option></select>
     </div>
+    <div class="field" id="stockWrap" style="display:none">
+      <label class="req" for="location">Stock location</label>
+      <input type="text" id="location" placeholder="e.g. Rack 001" autocomplete="off" autocapitalize="characters">
+      <p class="hint">Where it's been put away.</p>
+    </div>
     <div class="field">
       <label class="req" for="operative">Operative</label>
       <input type="text" id="operative" placeholder="Who did the work" autocomplete="off">
@@ -196,7 +201,7 @@ footer{text-align:center;font-size:11.5px;color:#a1a1aa;padding:6px 0 22px}
   <button type="button" class="btn ghost" id="again">Log another process</button>
 </div>
 
-<footer>Process Tracker PT001 &middot; Sign-off v1.2</footer>
+<footer>Process Tracker PT001 &middot; Sign-off v1.3</footer>
 </main>
 
 <script>
@@ -241,8 +246,11 @@ var CONFIG = {
     "Drawings", "Buy-in / Check", "Tracker",
     "Laser", "Press", "Fix / Sert",
     "Weld", "Clean-off", "Assembly",
-    "Paint", "Polish", "Sub-Con", "Despatch"
+    "Paint", "Polish", "Sub-Con", "Into Stock", "Despatch"
   ],
+  /* Picking this process reveals the stock location box. Change the
+     wording here and in PROCESSES together if you rename it. */
+  STOCK_PROCESS: "Into Stock",
   REPS: ["Andrew", "Chris", "Martyn", "Mick", "Neil", "Stuart"],
   JOBS: {"37560":["Andrew","URO001","ET490-SF"],"37844":["Andrew","DTF001","500mm Square"],"39115":["Neil","BAR002","N102763 Condiment unit angle RAL 9005 Matt"],"39209":["Andrew","CE-Air","GD1744-1-0 RAL1018 semi gloss"],"39212":["Andrew","BAR002","N102763 Condiment unit angle RAL 9005 Matt"],"39702":["Andrew","AMP001","AF 7400 REv A"],"40150":["Andrew","NEO001","CN867/1 Rev A"],"40250":["Andrew","NEO001","CN2015 Rev C"],"40253":["Andrew","NEO001","CN1126 Rev 2"],"40305":["Mick","CTS001","office bins General"],"40316":["Andrew","FLEX001","X41351 Rev R1"],"40341":["Andrew","CON009","OKO-000-100"],"40360":["Andrew","HER002","CTL Spider Plate"],"40377":["Andrew","FLEX001","X41844 R4"],"40380":["Andrew","FLEX001","X44900SA Rev 0"],"40384":["Neil","RJH001","Motor cover AN150 series"],"40394":["Neil","ABO001","Shelf frames RAL 7021 Matt"],"40397":["Neil","ABO001","Table frames RAL 7021 Matt"],"40400":["Neil","WHI001","Kinsway vets tray 1830 x 740 x 50mm RAL 6004 semi-gloss"],"40403":["Stuart","Cex001","YSS-801 1200mm 360 Half Cabinet with Light Channels"],"40409":["Stuart","CEX001","Gate Poat 1500mm"],"40412":["Andrew","HUC001","LCP-3M13052 Issue B"],"40413":["Neil","GEM001","Post room base frames RAL 9005 semi-gloss"],"40415":["Andrew","FLEX001","X41843 R4"],"40416":["Andrew","SUN001","AGH-001 Rev 01 RAL 9003 Gloss"],"40417":["Mick","intergat","4 Drawer pedestals"],"40418":["Neil","PAYHOLD","Mild steel tank 2500 x 1245 x 230mm 3mm mild steel"],"40419":["Chris","cex020","PAR-3111"],"40420":["Chris","CEX020","PAR-3111"],"40421":["Chris","cex020","YSS-722 1000M 360 HALF CABINET (STARTER)"],"40424":["Andrew","NEO001","CN867/1 Rev A"],"40426":["Neil","PAYHOLD","Steel platforms RAL 7016 semi-gloss"],"40427":["Mick","TIM001","double insole hangers"],"40428":["Neil","SBA01","Lock protection plates"],"40430":["Neil","WKW001","DRG A164520-6 REV 4 3mm 316 2B"],"40432":["Andrew","ARC002","PIC099-3015(C)(UTD) Rev C"],"40433":["Andrew","HAZTEC","98-1129-BKT HMEC069"],"40434":["Andrew","MAR004","900.1538.01 Rev A RAL 9016 matt"],"40435":["Andrew","CAM001","CR5326 LH Rev A"],"40436":["Neil","ABO001","Window fixture parts 5mm S275"],"40437":["Neil","PAY001","RFID Fixing Bracket 2mm 304 DP1"],"40438":["Andrew","FLEX001","X41351 Rev R1"],"40440":["Andrew","CON009","CON-THY-081-03 RAL 9005 semi gloss"],"40441":["Andrew","JFKPRECI","18574-Bottom Strip Frame Rev A"],"40442":["Neil","SBA01","Lock protection plates"],"40443":["Neil","QBM001","M8 Toggle bolt 300mm"],"40445":["Neil","HARTEWOO","D9470 Protection strip A = 300mm 2mm 304 DP1"],"40447":["Neil","RJH001","Basic COB Series Dust Unit Carcass"],"40448":["Neil","WHI001","Metal fixing brackets RAL 9005 Matt"],"40449":["Neil","WKW001","Free issue bend SCWDH30258-4"],"40450":["Neil","PAY001","RL201-10-27 5mm S275  Due date 01/11/2026"],"40451":["Andrew","ARC002","J01654 Rev 1"],"40452":["Andrew","MAR004","900.1549.01 Rev A"],"40453":["Andrew","UKELC001","103-256C Rev D RAL 9016 Gloss"],"40454":["Andrew","BUR001","2160.4 Issue 1"],"40455":["Mick","SPD001","FG-F-3010-01 1200 slotted RSB 9007 fine text"],"40456":["Andrew","ARC002","Beam Key Issue 3"],"40458":["Neil","ABO001","Booth wrap A"],"40460":["Andrew","HUC001","LCP-3M13052 Issue B"],"40461":["Andrew","FLEX001","X41844 R4"],"40464":["Neil","HARTEWOO","D9481 continuos header end caps RAL 7022 S/G"],"40465":["Andrew","LAM001","206 OD x 110 ID"],"40466":["Neil","CLAY001","Pipe pass through plate 2mm 304 2B"],"40467":["Neil","FIND001","Tray 800 x 670 x 25mm 1.5mm CR4  RAL 9016 S/G"],"40468":["Andrew","HAL006","PAR-2160-B RAL 9005 semi gloss"],"40469":["Andrew","ARC002","3123-B71214 Rev 2"],"40470":["Andrew","BUR001","5478_21i (R09921) Issue 1"],"40471":["Andrew","AMP001","AF 7657-1 Rev A"],"40472":["Andrew","MAR004","900.0542.01 Rev A RAL 9016 FTM"],"40473":["Neil","PAY001","Oven access door LH  RAL 7002 semi-gloss"],"40474":["Neil","PAY001","Additional Post 1   RAL 1021 S/G"],"40475":["Neil","HARTEWOO","D9219 Door 600 low height Matt black texture"],"40476":["Neil","HARTEWOO","D9484 signage hanging arm RAL 9005 matt"],"40477":["Neil","THE002","Floor Mounted Leg Single ( 125mm long tube)`"],"40478":["Neil","THE002","Brushed double bracket LINK    3mm DP2"],"40479":["Neil","WHI001","Steel base banner holder 2mm CR4 RAL 9005 semi-gloss"],"40480":["Andrew","RED04","Gecko 6 L-Bracket RAL 9005 matt"],"40481":["Andrew","HER002","CTL Spider Plate"],"40482":["Andrew","ARC002","1123261-2 Issue G"],"40483":["Andrew","AGR001","E21633-C"],"40484":["Andrew","SUN001","MCTRAN-001 RAL 9003 semi gloss"],"40485":["Andrew","ARC002","3123-B65633-1"],"40488":["Neil","BAR003","K105903 Flower Bucket Bracket"],"40489":["Andrew","ARC002","1123261-1 Issue G"],"40490":["Neil","PAYHOLD","Trays 560mm x 480mm x 25mm  3mm CR4"],"40491":["Stuart","ALINE001","Free Issue Press - Wheel Arches"],"40492":["Neil","RUST001","157mm x 50mm x 2mm CR4"],"40493":["Neil","CLAY001","Upper soldering jig 2mm CR4"],"40494":["Andrew","AMP001","AF 7825"],"40495":["Andrew","AMP001","AF 7658"],"40496":["Neil","INT001","Single sided returns unit with return bin (9005 black)"],"40497":["Neil","INT001","Return Unit Spare Bin  RAL 9005 S/G"],"40498":["Andrew","CAM01","ASDA-0046-SP01 Issue E"],"40499":["Mick","O&CC","ADJ mannequin stand"],"40500":["Neil","RUST001","Base Fixing Plate 3mm CR4"],"40501":["Andrew","OLICANA","41-175-1"],"40503":["Neil","WHI001","New product name tags RAL 9005 Matt  1.2mm CR4"],"40504":["Andrew","URO001","ET653-RGA"],"40505":["Andrew","ARC002","PIC073-4005-A (002)"],"40506":["Andrew","BUR001","6028_41i Issue 2"],"40508":["Neil","WKW001","Free issue material WKW 1334 rev B"],"40509":["Neil","WKW001","Free issue bending SCBENDAA1509416"],"40510":["Neil","ABO001","Panels 1.5mm CR4 & Infills 1.5mm DP1"],"40511":["Neil","SBA01","Lock protection plates"],"40512":["Neil","THE002","Brushed single bracket LINK  DP2"],"40513":["Chris","cex020","DT4S-001"],"40514":["Neil","PAYHOLD","QU03346 Door assembly set (raw finish)"],"40515":["Neil","SBA01","Lock protection plates"],"40516":["Neil","POP001","Capri Single Pedestal Dining Height  RAL 6004 semi-gloss"]}
 };
@@ -270,6 +278,14 @@ var CONFIG = {
   }
   fill($("process"), CONFIG.PROCESSES);
   fill($("rep"), CONFIG.REPS);
+
+  /* ---- stock location only appears when it's needed ---- */
+  function isStock() { return $("process").value === CONFIG.STOCK_PROCESS; }
+  $("process").addEventListener("change", function () {
+    var on = isStock();
+    $("stockWrap").style.display = on ? "" : "none";
+    if (on) $("location").focus(); else $("location").value = "";
+  });
 
   /* ---- look the job up in the planner ---- */
   var repTouched = false;
@@ -424,6 +440,7 @@ var CONFIG = {
       finish: $("finish").value,
       minutes: durationMins(),
       qty: $("qty").value.trim(),
+      location: isStock() ? $("location").value.trim() : "",
       notes: $("notes").value.trim(),
       problem: $("problem").checked
     };
@@ -438,6 +455,7 @@ var CONFIG = {
     if (!d.start) m.push("start time");
     if (!d.finish) m.push("finish time");
     if (!d.qty) m.push("quantity");
+    if (isStock() && !d.location) m.push("stock location");
     if (!ink) m.push("signature");
     return m;
   }
@@ -449,7 +467,8 @@ var CONFIG = {
   /* ---- the email ---- */
   function subject(d) {
     return (d.problem ? "PROBLEM — " : "") +
-      "Job " + d.job + "/" + d.line + " — " + d.process + " complete" +
+      "Job " + d.job + "/" + d.line + " — " + d.process +
+      (d.location ? " — " + d.location : " complete") +
       (d.customer ? " — " + d.customer : "");
   }
   function bodyText(d, when) {
@@ -467,6 +486,7 @@ var CONFIG = {
     L.push("Finished:   " + d.finish);
     L.push("Time taken: " + pretty(d.minutes));
     L.push("Quantity:   " + d.qty);
+    if (d.location) L.push("Stock loc:  " + d.location);
     if (d.notes) { L.push(""); L.push("Notes: " + d.notes); }
     if (d.problem) { L.push(""); L.push("** A PROBLEM HAS BEEN FLAGGED ON THIS JOB **"); }
     L.push("");
@@ -492,6 +512,7 @@ var CONFIG = {
       ["Quantity", d.qty]
     ];
     if (d.customer) rows.splice(1, 0, ["Customer", d.customer]);
+    if (d.location) rows.push(["Stock location", d.location]);
     $("recap").innerHTML = rows.map(function (r) {
       return "<div><span>" + r[0] + "</span><span>" + esc(r[1]) + "</span></div>";
     }).join("");
@@ -561,6 +582,7 @@ var CONFIG = {
       };
       if (d.customer) w3["Customer"] = d.customer;
       if (d.description) w3["Product"] = d.description;
+      if (d.location) w3["Stock location"] = d.location;
       if (d.notes) w3["Notes"] = d.notes;
       if (d.problem) w3["PROBLEM FLAGGED"] = "Yes";
       if (CONFIG.REPLY_TO_REP) w3.replyto = d.to;
@@ -590,6 +612,7 @@ var CONFIG = {
     $("f").style.display = "";
     $("process").value = ""; $("start").value = ""; $("finish").value = "";
     $("qty").value = ""; $("notes").value = "";
+    $("location").value = ""; $("stockWrap").style.display = "none";
     $("problem").checked = false; $("probWrap").classList.remove("on");
     $("dur").style.display = "none";
     $("clr").click();
